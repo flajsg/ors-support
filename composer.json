@@ -1,6 +1,7 @@
 {
     "name": "ors/support",
     "description": "ORS Support package",
+    "license": "MIT",
     "authors": [
         {
             "name": "ors",
