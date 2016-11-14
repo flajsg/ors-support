@@ -1,0 +1,20 @@
+{
+    "name": "ors/support",
+    "description": "ORS Support package",
+    "authors": [
+        {
+            "name": "ors",
+            "email": "gregor.flajs@ors.si"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Ors\\Support": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
