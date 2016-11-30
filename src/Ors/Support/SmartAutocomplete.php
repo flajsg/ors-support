@@ -166,7 +166,7 @@ class SmartAutocomplete implements ArrayableInterface {
      */
     public function push($model) {  
 
-    	if ($this->ac_callback) {
+    	if (!empty($this->ac_callback) && $this->ac_callback instanceof \Closure) {
     		$callback = $this->ac_callback;
    		    $this->list[]= $callback($model);
     	}
