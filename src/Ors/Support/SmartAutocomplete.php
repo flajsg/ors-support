@@ -233,7 +233,7 @@ class SmartAutocomplete implements ArrayableInterface {
  * Use this model when creating those little tabs with autocomplete function. 
  * This model has all the required information, so you can display a JQuery autocomplete tab.
  * 
- * For instance if you with to create tabs using a collection of objects, you can do something like this:
+ * For instance if you wish to create tabs using a collection of objects, you can do something like this:
  * 
  * <code>
  *  // In PHP create a collection of tabs
@@ -279,7 +279,7 @@ class SmartAutocompleteTab implements ArrayableInterface {
 	 * @param \Illuminate\Support\Collection $collection
 	 * @param callable $callback
 	 * 		if callback is null, then SmartAutocompleteTab::withModel() is used to create objects
-	 * 		else SmartAutocompleteTab::withAray($callback($item)) is used to create objects.
+	 * 		else SmartAutocompleteTab::withArray($callback($item)) is used to create objects.
 	 * @return \Illuminate\Support\Collection
 	 */
 	public static function withCallback($collection, $callback = null) {
@@ -288,7 +288,7 @@ class SmartAutocompleteTab implements ArrayableInterface {
 		if ($collection)
 		foreach ($collection as $c) {
 			if (is_callable($callback))
-		    	$items->push(static::withAray($callback($c)));
+		    	$items->push(static::withArray($callback($c)));
 			else
 				$items->push(static::withModel($c));
 		}
@@ -298,8 +298,8 @@ class SmartAutocompleteTab implements ArrayableInterface {
 	
 	/**
 	 * Constructor from model object.
-	 * You need the following accessors: SmartAutocompleteKey, SmartAutocompleteTitle, SmartAutocompleteTab.
-	 * @param Eloquent $model
+	 * Model must implement SmartAutocompleteInterface.
+	 * @param SmartAutocompleteInterface $model
 	 * @return \ORS\Helpers\SmartAutocompleteTab
 	 */
 	public static function withModel($model) {
@@ -313,7 +313,7 @@ class SmartAutocompleteTab implements ArrayableInterface {
 	 * @param array $arr
 	 * @return \ORS\Helpers\SmartAutocompleteTab
 	 */
-	public static function withAray($arr) {
+	public static function withArray($arr) {
 		$instance = new self($arr['value'], $arr['label'], $arr['tab']);
 		return $instance;
 	}
@@ -325,7 +325,7 @@ class SmartAutocompleteTab implements ArrayableInterface {
 	 * @return \ORS\Helpers\SmartAutocompleteTab
 	 */
 	public static function withJson($json) {
-		return self::withAray(json_decode($json, true));
+		return self::withArray(json_decode($json, true));
 	}
 	
 	/**
