@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Collection;
  * @author Gregor Flajs
  *
  */
-class SmartSearchParameters {
+class SmartSearchParameters implements CRSFieldInterface {
 	
 	/**
 	 * All valid CRS search fields
@@ -38,7 +38,7 @@ class SmartSearchParameters {
 		'ctype_id', 'tab', 'uniqid',
 		
 		// basic search
-		'epc', 'ka1', 'ka2', 'ka3', 'vnd', 'bsd', 'tmin', 'tmax', 'rgcs', 'htn', 'gid', 'stc', 'hon', 'zhc', 'toc', 'ahc', 'zac', 'vpc', 'ctyiso', 'htc', 'lang', 'hsc', 'sid',
+		'epc', 'ka1', 'ka2', 'ka3', 'ka4', 'ka5', 'vnd', 'bsd', 'tmin', 'tmax', 'tdc', 'rgcs', 'htn', 'gid', 'stc', 'hon', 'zhc', 'toc', 'ahc', 'zac', 'vpc', 'ctyiso', 'htc', 'lang', 'hsc', 'sid',
 	
 		// old_ppc
 		'old_ppc',
@@ -70,7 +70,7 @@ class SmartSearchParameters {
 	 * Valid header fields
 	 * @var array
 	 */
-	public static $header_fields = [
+	protected static $header_fields = [
 		'ibeid', 'ctype_id', 'tab', 'uniqid', 'debug', 'test', 'debug_opts', 'test_url'
 	];
 	
@@ -81,37 +81,29 @@ class SmartSearchParameters {
 	private $params = [];
 	
 	/**
-	 * meta search data
-	 * @var SmartAutocompleteTab[]
-	 */
-	private $meta = [];
-	
-	/**
 	 * CRS fields
 	 * @var Collection|CRSField[]
 	 */ 
-	public $crsf;
+	protected $crsf;
 	
 	/**
 	 * Header fields
 	 * @var array
 	 */
-	public $header = [];
+	protected $header = [];
 	
 	/**
 	 * Constructor
-	 * @param array|json $data
+	 * @param array|string $data
 	 * 		Input search parameters
 	 */
-	public function __construct($data) {
+	public function __construct($attributes) {
 		
 		// check if $data is json
-		if (Common::isJson($data))
-		    $data = json_decode($data, true);
+		if (Common::isJson($attributes))
+		    $attributes = json_decode($attributes, true);
 		
-		$this->params = $this->__parseInputSearchParams($data);
-		
-		$this->meta = $this->_makeMeta($this->params);
+		$this->params = $this->__parseInputSearchParams($attributes);
 		
 		$this->crsf = $this->_makeCRSFields($this->params);
 		
@@ -128,80 +120,136 @@ class SmartSearchParameters {
 	} 
 	
 	/**
-	 * Return CRSField object
-	 * @param string $field
-	 * @return CRSField|NULL
+	 * @see \Ors\Support\CRSFieldInterface::find()
 	 */
-	public function getCrsf($field) {
-		if ($this->crsf->contains($field)) 
-			return $this->crsf->find($field);
+	public function find($name) {
+		if ($this->crsf->contains($name))
+		    return $this->crsf->find($name);
 		return null;
 	}
-	
+
 	/**
-	 * Return true if $field is set in crsf array
-	 * @param string $field
-	 * 		CRS field name
-	 * @return boolean
+	 * @see \Ors\Support\CRSFieldInterface::has()
 	 */
-	public function hasCrsf($field) {
-		return $this->crsf->contains($field);
+	public function has($name) {
+		return $this->crsf->contains($name);
 	}
 	
 	/**
-	 * Rturn a list of CRSFields
-	 * @return Collection|CRSField[]
+	 * @see \Ors\Support\CRSFieldInterface::isEmpty()
 	 */
-	public function getCrsfs() {
+	public function isEmpty($name) {
+	    return !$this->has($name) || $this->find($name)->isEmpty();
+	}
+	
+	/**
+	 * @see \Ors\Support\CRSFieldInterface::all()
+	 */
+	public function all() {
 		return $this->crsf;
 	}
 	
+	/**
+	 * @see \Ors\Support\CRSFieldInterface::forget()
+	 */
+	public function forget($name) {
+		unset($this->params[$name]);
+		$this->crsf->forget($name);
+		return;
+	}
+	
+	/**
+	 * Return CRSField object
+	 * @param string $name
+	 * @return \Ors\Support\CRSField|NULL
+	 * @deprecated soon this method will be removed from class
+	 */
+	public function getCrsf($name) {
+		return $this->find($name);
+	}
+	
+	/**
+	 * Return true if $name is set in crsf array
+	 * @param string $name
+	 * 		CRS field name
+	 * @return boolean
+	 * @deprecated soon this method will be removed from class
+	 */
+	public function hasCrsf($name) {
+		return $this->has($name);
+	}
+	
+	/**
+	 * Return a list of CRSFields
+	 * @return Collection|CRSField[]
+	 * @deprecated soon this method will be removed from class
+	 */
+	public function getCrsfs() {
+		return $this->all();
+	}
+	
+	/**
+	 * defaultCrsfs() alias.
+	 * @return Collection|CRSField[]
+	 */
+	public static function defaults() {
+		$crsfs = new Collection();
+		foreach (self::$valid_fields as $tag)
+		    $crsfs->push(new CRSField(array('name' => $tag, 'value' => '')));
+		return $crsfs;
+		
+	}
 	
 	/**
 	 * Make default CRSFields with empty values
 	 * @return Collection|CRSField[]
+	 * @deprecated soon this method will be removed from class
 	 */
 	public static function defaultCrsfs() {
-		$crsfs = new Collection();
-		foreach (self::$valid_fields as $tag)
-			$crsfs->push(new CRSField(array('name' => $tag, 'value' => '')));
-		return $crsfs;
+		return self::defaults();
 	}
 	
 	/**
-	 * Return a number of adults
-	 * @return int
+	 * @see \Ors\Support\CRSFieldInterface::adults()
 	 */
 	public function adults() {
-		return $this->getCrsf('epc')->value;
+		return !$this->has('epc') ? 0 : $this->find('epc')->value;
 	}
 	
 	/**
-	 * Return a number of children (including infants)
-	 * @return int
+	 * @see \Ors\Support\CRSFieldInterface::children()
 	 */
 	public function children() {
 		$count = 0;
-		if ($this->getCrsf('ka1')->value > 0)
+		if ($this->has('ka1') && $this->find('ka1')->value > 0)
 			$count ++;
-		if ($this->getCrsf('ka2')->value > 0)
+		if ($this->has('ka2') && $this->find('ka2')->value > 0)
 			$count ++;
-		if ($this->getCrsf('ka3')->value > 0)
+		if ($this->has('ka3') && $this->find('ka3')->value > 0)
+			$count ++;
+		
+		// sometime soon we will enable more then 3 children to search for, so lets make sure we handle this now :) 
+		if (!$this->isEmpty('ka4') && $this->find('ka4')->value > 0)
+			$count ++;
+		if (!$this->isEmpty('ka5') && $this->find('ka5')->value > 0)
 			$count ++;
 		return $count;
 	}
 	
 	/**
-	 * Return a number of infants (use $inf_age to determine infant max age)
-	 * @return int
+	 * @see \Ors\Support\CRSFieldInterface::infants()
 	 */
 	public function infants($inf_age = 2) {
 		$count = 0;
-		if ($this->getCrsf('ka1')->value > 0 && $this->getCrsf('ka1')->value < $inf_age)
+		if ($this->has('ka1') && $this->find('ka1')->value > 0 && $this->find('ka1')->value < $inf_age)
 			$count ++;
-		if ($this->getCrsf('ka2')->value > 0 && $this->getCrsf('ka1')->value < $inf_age)
+		if ($this->has('ka2') && $this->find('ka2')->value > 0 && $this->find('ka1')->value < $inf_age)
 			$count ++;
-		if ($this->getCrsf('ka3')->value > 0 && $this->getCrsf('ka1')->value < $inf_age)
+		if ($this->has('ka3') && $this->find('ka3')->value > 0 && $this->find('ka1')->value < $inf_age)
+			$count ++;
+		if ($this->has('ka4') && $this->find('ka4')->value > 0 && $this->find('ka4')->value < $inf_age)
+			$count ++;
+		if ($this->has('ka5') && $this->find('ka5')->value > 0 && $this->find('ka5')->value < $inf_age)
 			$count ++;
 		return $count;
 	}
@@ -286,51 +334,26 @@ class SmartSearchParameters {
 	}
 	
 	/**
-	 * Handler for creation of meta datas
-	 * @param array $params
-	 * 		filtered search parameters
-	 * @return array
-	 */
-	private function _makeMeta($params) {
-		$meta = array();
-		foreach ($params as $tag => $val) {
-			if (method_exists($this, '_meta_'.$tag))
-				$meta[$tag] = $this->{'_meta_'.$tag}($val);
-			else
-				$meta[$tag] = array();
-		}
-		return $meta;
-	}
-	
-	/**
 	 * Create CRSField objects from search parameters
 	 * @param array $params
 	 * 		filtered search parameters
 	 * @return Collection|CRSField[]
 	 */
-	private function _makeCRSFields($params) {
+	protected function _makeCRSFields($params) {
 		$crsf = new Collection();
 		foreach ($params as $tag => $val){
-			$crsf->push(new CRSField(array('name' => $tag, 'value' => $val, 'meta' => $this->meta[$tag])));
+			$crsf->push(new CRSField(array('name' => $tag, 'value' => $val)));
 		}
 		return $crsf;
 	}
 	
-	private function _makeHeaderFields($params) {
+	protected function _makeHeaderFields($params) {
 		$header = [];
 		foreach ($params as $tag => $val){
 			if (in_array($tag, self::$header_fields))
 			$header[$tag]= $val;
 		}
 		return $header;
-	}
-	
-	/**
-	 * Return Meta data
-	 * @return array
-	 */
-	public function getMeta() {
-		return $this->meta;
 	}
 	
 	/**
@@ -341,11 +364,6 @@ class SmartSearchParameters {
 		return $this->params;
 	}
 	
-	public function forget($name) {
-		echo $name;
-		unset($this->params[$name]);
-		$this->crsf->forget($name);
-	}
 	
 	/**
 	 * @return array
