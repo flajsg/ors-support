@@ -307,6 +307,10 @@ class SmartSearchParameters implements CRSFieldInterface {
         	$filtered['ka2'] = '';
         if (empty($filtered['ka3']))
         	$filtered['ka3'] = '';
+        
+        // check rgcs_search (if no rgc is selected, there might be something in search input)
+        if (!empty($data['rgcs_search']) && empty($filtered['rgcs']) && strlen($data['rgcs_search']) <= 5)
+        	$filtered['rgcs'] = $data['rgcs_search'];
 	
 	    // debug/test params
 	    $debug = !empty($data['debug']) ? (bool)$data['debug'] : false;
