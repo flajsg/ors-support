@@ -525,63 +525,6 @@ class Common {
 	}
 	
 	/**
-	 * Return ORS Icon representing Giata Fact.
-	 * @param string $code
-	 * 		giata fact code (air, wifi, bea, ...)
-	 * @return \OAM\OAMIcon|NULL
-	 * 		NULL is returned if there is no Icon available for $code
-	 */
-	public static function factIcon($code) {
-	    switch ($code) {
-	    	case 'air':
-	    	    return new \OAM\OAMIcon(array('icon' => 'glyphicons glyphicons-snowflake', 'name' => Lang::get('oam_objects.air:object')));
-	    	case 'wifi':
-	    	    return new \OAM\OAMIcon(array('icon' => 'glyphicons glyphicons-wifi', 'name' => Lang::get('oam_objects.wifi:object')));
-	    	case 'bea':
-	    	case 'ben':
-	    	    return new \OAM\OAMIcon(array('icon' => 'glyphicons glyphicons-beach_umbrella', 'name' => Lang::get('oam_objects.bea:object')));
-	    	case 'pol':
-	    	case 'ipl':
-	    	    return new \OAM\OAMIcon(array('icon' => 'glyphicons glyphicons-pool', 'name' => Lang::get('oam_objects.pol:object')));
-	    	case 'whc':
-	    	    return new \OAM\OAMIcon(array('icon' => 'fa fa-wheelchair', 'name' => Lang::get('oam_objects.whc:object')));
-	    	case 'spt':
-	    	case 'sws':
-	    	case 'shb':
-	    	case 'sgl':
-	    	case 'srd':
-	    	case 'sae':
-	    	case 'sfr':
-	    	case 'stn':
-	    	case 'sdv':
-	    	case 'sth':
-	    	    return new \OAM\OAMIcon(array('icon' => 'glyphicons glyphicons-soccer_ball', 'name' => Lang::get('oam_objects.spt:object')));
-	    	case 'spa':
-	    	case 'wel':
-	    	case 'wms':
-	    	case 'way':
-	    	case 'wth':
-	    	case 'wcu':
-	    	case 'wsn':
-	    	case 'wdt':
-	    	case 'waa':
-	    	case 'wbf':
-	    	case 'wac':
-	    	case 'wap':
-	    	    return new \OAM\OAMIcon(array('icon' => 'glyphicons glyphicons-heart_empty', 'name' => Lang::get('oam_objects.wel:object')));
-	    	case 'pet':
-	    	    return new \OAM\OAMIcon(array('icon' => 'glyphicons glyphicons-dog', 'name' => Lang::get('oam_objects.pet:object')));
-	    	case 'park':
-	    	    return new \OAM\OAMIcon(array('icon' => 'glyphicons glyphicons-car', 'name' => Lang::get('oam_objects.park:object')));
-	    	case 'chf':
-	    	    return new \OAM\OAMIcon(array('icon' => 'fa fa-smile-o', 'name' => Lang::get('oam_objects.chf:object')));
-	
-	    	default:
-	    	    return null;
-	    }
-	}
-	
-	/**
 	 * Pad array with zeros if needed so it is easier to iterate trough
 	 *  @param $input
 	 *  @return Fixed array
