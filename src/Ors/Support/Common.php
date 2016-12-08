@@ -242,14 +242,14 @@ class Common {
 		
 		if ($operator == 'OR') {
 			foreach($keywords as $key) {
-			    if (mb_stripos($str, $key, 0, 'UTF-8') !== false) return true;
+			    if (!empty($key) && mb_stripos($str, $key, 0, 'UTF-8') !== false) return true;
 			}
 			return false;
 		} 
 		elseif ($operator == 'AND') {
 			$trues = 0;
 			foreach($keywords as $key) {
-			    if (mb_stripos($str, $key, 0, 'UTF-8') !== false) $trues++;
+			    if (!empty($key) && mb_stripos($str, $key, 0, 'UTF-8') !== false) $trues++;
 			}
 			return $trues == count($keywords);
 		}
