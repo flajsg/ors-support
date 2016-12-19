@@ -11,7 +11,7 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "4.2.*",
-        "giggsey/libphonenumber-for-php": "7.0",
+        "giggsey/libphonenumber-for-php": "~7.0",
         "jenssegers/date": "~2.0"
     },
     "autoload": {
