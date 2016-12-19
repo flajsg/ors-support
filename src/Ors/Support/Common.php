@@ -5,12 +5,13 @@ define('ISOLD_DATETIME_FORMAT', 1);
 define('ISOLD_MIDNIGHT_EARLY', 2);
 define('ISOLD_MIDNIGHT_LATE', 3);
 
-use PhoneNumberUtil;
-use Date;
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\NumberParseException;
+use Illuminate\Support\Facades\Lang;
+use Jenssegers\Date\Date;
 use DateTime;
 use DateTimeZone;
-use Lang;
-use Carbon;
 
 /**
  * ORS Common class. 
@@ -33,12 +34,12 @@ class Common {
 	 * @return string
 	 */
 	public static function phone($phone, $country_iso = 'SI') {
-	    $phoneUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+	    $phoneUtil = PhoneNumberUtil::getInstance();
 	    try {
 	        $phoneProto = $phoneUtil->parse($phone, strtoupper($country_iso));
-	        return $phoneUtil->format($phoneProto, \libphonenumber\PhoneNumberFormat::INTERNATIONAL);
+	        return $phoneUtil->format($phoneProto, PhoneNumberFormat::INTERNATIONAL);
 	    }
-	    catch (\libphonenumber\NumberParseException $e) {
+	    catch (NumberParseException $e) {
 	        return $phone;
 	    }
 	    return $phone;
@@ -155,8 +156,8 @@ class Common {
 	public static function daysBetween($date_from, $date_to) {
 		$date_from = date('Y-m-d H:i:s', strtotime($date_from));
 		$date_to = date('Y-m-d H:i:s', strtotime($date_to));
-		$dt_start = Carbon::createFromFormat('Y-m-d H:i:s', $date_from);
-		$dt_end   = Carbon::createFromFormat('Y-m-d H:i:s', $date_to);
+		$dt_start = Date::createFromFormat('Y-m-d H:i:s', $date_from);
+		$dt_end   = Date::createFromFormat('Y-m-d H:i:s', $date_to);
 		return $dt_start->diffInDays($dt_end, false);
 		/*
 		// previous method to calc days
@@ -176,8 +177,8 @@ class Common {
 	public static function hoursBetween($date_from, $date_to) {
 		$date_from = date('Y-m-d H:i:s', strtotime($date_from));
 		$date_to = date('Y-m-d H:i:s', strtotime($date_to));
-	    $dt_start = Carbon::createFromFormat('Y-m-d H:i:s', $date_from);
-	    $dt_end   = Carbon::createFromFormat('Y-m-d H:i:s', $date_to);
+	    $dt_start = Date::createFromFormat('Y-m-d H:i:s', $date_from);
+	    $dt_end   = Date::createFromFormat('Y-m-d H:i:s', $date_to);
 	    return $dt_start->diffInHours($dt_end, false);
 	}
 	
